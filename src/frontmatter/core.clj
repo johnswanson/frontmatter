@@ -31,12 +31,16 @@
     "###" parse-edn
     nil))
 
-(defn parse
-  [path]
-  (let [original-body             (-> path slurp str/trim)
+(defn parse-string [s]
+  (let [original-body             (str/trim s)
         [first-line & rest-lines] (str/split-lines original-body)
         [frontmatter body]        (split-lines rest-lines first-line)]
     (if-let [parser (select-parse-fn first-line)]
       {:body (str/join "\n" body)
        :frontmatter (parser (str/join "\n" frontmatter))}
       {:frontmatter {} :body original-body})))
+
+(defn parse
+  [path]
+  (parse-string (slurp path)))
+
